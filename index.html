@@ -1,225 +1,608 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canada Food Prices 2018-2026 | Yaonan Liu</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:linear-gradient(145deg,#0a0a0f 0%,#121218 40%,#1a1a2e 100%);color:#fff;font-family:'Courier New',monospace;min-height:100vh;overflow-x:hidden}
-.grid-bg{position:fixed;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-.container{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:30px 20px}
-.source-tag{font-size:11px;letter-spacing:6px;color:#666;text-align:center;text-transform:uppercase;margin-bottom:8px}
-h1{font-size:clamp(28px,5vw,48px);font-weight:900;background:linear-gradient(135deg,#E63946,#F4A261,#E9C46A,#2A9D8F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;text-align:center;font-family:Georgia,serif;margin-bottom:8px}
-.subtitle{font-size:clamp(14px,2.5vw,20px);color:#888;font-family:Georgia,serif;font-style:italic;text-align:center}
-.credit{font-size:11px;color:#555;text-align:center;margin-top:6px}
-#year-display{font-size:clamp(48px,8vw,80px);font-weight:900;font-family:Georgia,serif;text-align:center;transition:color 0.6s;margin:10px 0}
-.timeline{display:flex;justify-content:center;gap:6px;margin:8px 0 20px}
-.timeline button{height:6px;border-radius:3px;border:none;cursor:pointer;transition:all 0.4s}
-#start-btn{display:block;margin:50px auto;padding:18px 50px;font-size:18px;font-weight:700;background:linear-gradient(135deg,#E63946,#F4A261);color:#fff;border:none;border-radius:50px;cursor:pointer;font-family:Georgia,serif;letter-spacing:2px;box-shadow:0 0 40px rgba(230,57,70,0.3)}
-#start-btn:hover{transform:scale(1.05);box-shadow:0 0 60px rgba(230,57,70,0.5)}
-.chart{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(4px,1vw,12px);margin-top:10px;padding:0 2px}
-.food-card{cursor:pointer;text-align:center;padding:clamp(4px,1vw,12px);border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);transition:all 0.4s}
-.food-emoji{font-size:clamp(20px,3vw,32px);margin-bottom:4px}
-.food-name{font-size:clamp(9px,1.2vw,12px);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
-.food-unit{font-size:clamp(7px,0.9vw,9px);color:#555;margin-bottom:10px}
-.bar-area{height:290px;display:flex;align-items:flex-end;justify-content:center;position:relative}
-.bar{width:60%;border-radius:6px 6px 2px 2px;transition:height 1.2s cubic-bezier(0.34,1.56,0.64,1);position:relative}
-.bar-side{position:absolute;right:-8px;top:4px;width:8px;height:100%;border-radius:0 4px 4px 0;transform:skewY(-15deg);transform-origin:top left}
-.bar-top{position:absolute;top:-4px;left:0;right:-8px;height:8px;border-radius:4px 4px 0 0;transform:skewX(-30deg);transform-origin:bottom left}
-.bar-shine{position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0.12),transparent);border-radius:6px 0 0 2px}
-.price{font-size:clamp(16px,2.5vw,26px);font-weight:900;margin-top:10px;font-family:Georgia,serif;transition:all 0.4s}
-.change{font-size:clamp(10px,1.3vw,14px);font-weight:700;margin-top:4px;transition:all 0.4s}
-.change-label{font-size:clamp(7px,0.8vw,9px);color:#444;margin-top:2px}
-.guide{position:absolute;left:0;right:0;border-top:1px dashed rgba(255,255,255,0.04)}
-#summary{margin-top:24px;padding:20px;background:linear-gradient(135deg,rgba(230,57,70,0.08),rgba(244,162,97,0.05));border-radius:16px;border:1px solid rgba(230,57,70,0.15);text-align:center;display:none}
-#summary.show{display:block;animation:fadeIn 0.8s}
-.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px}
-.summary-num{font-size:28px;font-weight:900;font-family:Georgia,serif}
-.summary-label{font-size:10px;color:#888}
-.summary-detail{font-size:9px;color:#555}
-.controls{text-align:center;margin-top:20px;display:flex;justify-content:center;gap:12px}
-.ctrl-btn{padding:10px 28px;font-size:13px;font-weight:700;color:#fff;border:none;border-radius:30px;cursor:pointer;letter-spacing:1px;font-family:'Courier New',monospace}
-.footer{text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.05);font-size:9px;color:#444;line-height:1.8}
-.hidden{display:none}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeIn 0.5s ease}
-</style>
-</head>
-<body>
-<div class="grid-bg"></div>
-<div class="container">
-  <div class="source-tag">Statistics Canada · Table 18-10-0245-01</div>
-  <h1>Canada Food Prices</h1>
-  <div class="subtitle">2018 — 2026 · How Much More Are We Paying?</div>
-  <div class="credit">ECON 4070 · Yaonan Liu · University of Windsor</div>
+import { useState, useEffect, useRef, useCallback } from “react”;
 
-  <div id="year-section" class="hidden">
-    <div id="year-display">2018</div>
-    <div class="timeline" id="timeline"></div>
-  </div>
+/* ───────────────────────── SCROLL REVEAL HOOK ───────────────────────── */
+function useScrollReveal(options = {}) {
+const ref = useRef(null);
+const [isVisible, setIsVisible] = useState(false);
+useEffect(() => {
+const el = ref.current;
+if (!el) return;
+const observer = new IntersectionObserver(
+([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.unobserve(el); } },
+{ threshold: options.threshold || 0.15, rootMargin: options.rootMargin || “0px 0px -40px 0px” }
+);
+observer.observe(el);
+return () => observer.disconnect();
+}, []);
+return [ref, isVisible];
+}
 
-  <button id="start-btn" onclick="startAnimation()">▶ START</button>
+/* ───────────────────────── SCROLL REVEAL WRAPPER ───────────────────────── */
+function Reveal({ children, direction = “up”, delay = 0, className = “” }) {
+const [ref, isVisible] = useScrollReveal();
+const transforms = { up: “translateY(36px)”, down: “translateY(-36px)”, left: “translateX(-40px)”, right: “translateX(40px)”, none: “none” };
+return (
+<div ref={ref} className={className} style={{
+opacity: isVisible ? 1 : 0,
+transform: isVisible ? “none” : transforms[direction],
+transition: `opacity 0.6s cubic-bezier(0.22,1,0.36,1) ${delay}s, transform 0.6s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+}}>
+{children}
+</div>
+);
+}
 
-  <div id="chart-section" class="chart hidden"></div>
+/* ───────────────────────── SECTION HEADER ───────────────────────── */
+function SectionHeader({ label, title, subtitle, light = false }) {
+return (
+<Reveal direction="up" className="mb-12 md:mb-16">
+<p className=“text-xs font-semibold tracking-[0.25em] uppercase mb-3” style={{ color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>{label}</p>
+<h2 className=“text-3xl md:text-4xl lg:text-5xl font-normal leading-tight mb-4” style={{ fontFamily: “‘DM Serif Display’, serif”, color: light ? “#FAFAF8” : “#1C1C1E” }}>{title}</h2>
+{subtitle && <p className=“text-base md:text-lg max-w-2xl leading-relaxed” style={{ color: light ? “rgba(250,250,248,0.6)” : “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}>{subtitle}</p>}
+</Reveal>
+);
+}
 
-  <div id="summary">
-    <div style="font-size:13px;letter-spacing:3px;color:#E63946;text-transform:uppercase;margin-bottom:8px">Key Findings · 2018 vs 2026</div>
-    <div class="summary-grid">
-      <div><div class="summary-num" style="color:#E63946">+69%</div><div class="summary-label">Ground Beef</div><div class="summary-detail">$9.11 → $15.36/kg</div></div>
-      <div><div class="summary-num" style="color:#F77F00">+77%</div><div class="summary-label">Orange Juice</div><div class="summary-detail">$3.57 → $6.33/2L</div></div>
-      <div><div class="summary-num" style="color:#F4A261">+48%</div><div class="summary-label">Eggs</div><div class="summary-detail">$3.20 → $4.74/dz</div></div>
-    </div>
-    <div style="font-size:11px;color:#666;margin-top:16px;font-style:italic;font-family:Georgia,serif">"Food demand is inelastic — people still need to eat. But the burden falls hardest on those who can least afford it."</div>
-  </div>
+/* ───────────────────────── NAV ───────────────────────── */
+function Nav() {
+const [scrolled, setScrolled] = useState(false);
+const [menuOpen, setMenuOpen] = useState(false);
+useEffect(() => {
+const h = () => setScrolled(window.scrollY > 60);
+window.addEventListener(“scroll”, h, { passive: true });
+return () => window.removeEventListener(“scroll”, h);
+}, []);
+const links = [“About”, “Education”, “Experience”, “Research”, “Projects”, “Skills”, “Contact”];
+const scrollTo = (id) => { document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: “smooth” }); setMenuOpen(false); };
+return (
+<nav className=“fixed top-0 left-0 right-0 z-50 transition-all duration-500” style={{
+background: scrolled ? “rgba(250,250,248,0.92)” : “transparent”,
+backdropFilter: scrolled ? “blur(16px)” : “none”,
+borderBottom: scrolled ? “1px solid #E5E4E0” : “1px solid transparent”,
+}}>
+<div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between h-16">
+<button onClick={() => window.scrollTo({ top: 0, behavior: “smooth” })} className=“text-lg font-semibold tracking-tight cursor-pointer” style={{ fontFamily: “‘DM Serif Display’, serif”, color: “#1C1C1E” }}>Y.L.</button>
+<div className="hidden md:flex items-center gap-8">
+{links.map(l => (
+<button key={l} onClick={() => scrollTo(l)} className=“text-xs font-medium tracking-wider uppercase cursor-pointer transition-colors duration-300 hover:opacity-100” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}
+onMouseEnter={e => e.target.style.color = “#C4713B”} onMouseLeave={e => e.target.style.color = “#6B6B6B”}>
+{l}
+</button>
+))}
+</div>
+<button onClick={() => setMenuOpen(!menuOpen)} className=“md:hidden flex flex-col gap-1.5 cursor-pointer p-2”>
+<span className=“block w-5 h-0.5 bg-gray-800 transition-transform duration-300” style={{ transform: menuOpen ? “rotate(45deg) translateY(4px)” : “none” }} />
+<span className=“block w-5 h-0.5 bg-gray-800 transition-opacity duration-300” style={{ opacity: menuOpen ? 0 : 1 }} />
+<span className=“block w-5 h-0.5 bg-gray-800 transition-transform duration-300” style={{ transform: menuOpen ? “rotate(-45deg) translateY(-4px)” : “none” }} />
+</button>
+</div>
+{menuOpen && (
+<div className=“md:hidden px-6 pb-6 pt-2” style={{ background: “rgba(250,250,248,0.98)”, backdropFilter: “blur(16px)” }}>
+{links.map(l => (
+<button key={l} onClick={() => scrollTo(l)} className=“block w-full text-left py-3 text-sm font-medium tracking-wider uppercase cursor-pointer” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif”, borderBottom: “1px solid #E5E4E0” }}>{l}</button>
+))}
+</div>
+)}
+</nav>
+);
+}
 
-  <div id="controls" class="controls hidden">
-    <button class="ctrl-btn" id="play-btn" onclick="togglePlay()" style="background:linear-gradient(135deg,#E63946,#F4A261)">⏸ PAUSE</button>
-    <button class="ctrl-btn" onclick="resetAll()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#666">✕ RESET</button>
-  </div>
-
-  <div class="footer">
-    Source: Statistics Canada, Table 18-10-0245-01<br>
-    Monthly average retail prices for selected products (January of each year, Canada)<br>
-    DOI: https://doi.org/10.25318/1810024501-eng
-  </div>
+/* ───────────────────────── HERO ───────────────────────── */
+function Hero() {
+const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: “smooth” });
+return (
+<section className=“relative min-h-screen flex items-center overflow-hidden” style={{ background: “#FAFAF8” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10 w-full py-32 md:py-0">
+<div className="grid md:grid-cols-12 gap-8 md:gap-12 items-center">
+<div className="md:col-span-7 lg:col-span-7">
+<Reveal direction="up" delay={0.1}>
+<p className=“text-xs font-semibold tracking-[0.3em] uppercase mb-6” style={{ color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>
+Economics · Product · Data · Research
+</p>
+</Reveal>
+<Reveal direction="up" delay={0.2}>
+<h1 className=“text-5xl md:text-6xl lg:text-7xl font-normal leading-[1.05] mb-6” style={{ fontFamily: “‘DM Serif Display’, serif”, color: “#1C1C1E” }}>
+Yaonan Liu
+</h1>
+</Reveal>
+<Reveal direction="up" delay={0.3}>
+<p className=“text-xl md:text-2xl font-light leading-relaxed mb-4” style={{ color: “#3A3A3C”, fontFamily: “Outfit, sans-serif” }}>
+Building at the intersection of economics,<br className="hidden md:block" /> technology, and decision-making.
+</p>
+</Reveal>
+<Reveal direction="up" delay={0.4}>
+<p className=“text-base leading-relaxed mb-8 max-w-lg” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}>
+Economics honours student with hands-on experience in product strategy, data science, and quantitative research. Turning complex data into clear, actionable insight.
+</p>
+</Reveal>
+<Reveal direction="up" delay={0.5}>
+<div className="flex flex-wrap gap-4">
+<button onClick={() => scrollTo(“experience”)} className=“px-7 py-3.5 text-sm font-medium tracking-wide rounded-full cursor-pointer transition-all duration-300” style={{
+background: “#1C1C1E”, color: “#FAFAF8”, fontFamily: “Outfit, sans-serif”,
+}} onMouseEnter={e => { e.target.style.background = “#C4713B”; e.target.style.transform = “translateY(-2px)”; e.target.style.boxShadow = “0 8px 24px rgba(196,113,59,0.25)”; }}
+onMouseLeave={e => { e.target.style.background = “#1C1C1E”; e.target.style.transform = “none”; e.target.style.boxShadow = “none”; }}>
+View My Work
+</button>
+<button onClick={() => scrollTo(“contact”)} className=“px-7 py-3.5 text-sm font-medium tracking-wide rounded-full cursor-pointer transition-all duration-300” style={{
+background: “transparent”, color: “#1C1C1E”, fontFamily: “Outfit, sans-serif”, border: “1.5px solid #D1D0CC”,
+}} onMouseEnter={e => { e.target.style.borderColor = “#C4713B”; e.target.style.color = “#C4713B”; e.target.style.transform = “translateY(-2px)”; }}
+onMouseLeave={e => { e.target.style.borderColor = “#D1D0CC”; e.target.style.color = “#1C1C1E”; e.target.style.transform = “none”; }}>
+Get in Touch
+</button>
+</div>
+</Reveal>
+</div>
+<div className="md:col-span-5 lg:col-span-5 flex justify-center md:justify-end">
+<Reveal direction="right" delay={0.4}>
+<div className="relative">
+<div className=“w-64 h-80 md:w-72 md:h-96 rounded-2xl overflow-hidden” style={{ background: “#EDEDEB”, border: “1px solid #E5E4E0” }}>
+<div className=“w-full h-full flex items-center justify-center” style={{ fontFamily: “Outfit, sans-serif”, color: “#9A9A9A”, fontSize: “0.8rem”, letterSpacing: “0.1em” }}>
+<div className="text-center">
+<div className=“w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center” style={{ background: “rgba(28,28,30,0.06)” }}>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9A9A9A" strokeWidth="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+</div>
+PHOTO
+</div>
+</div>
+</div>
+<div className=“absolute -bottom-4 -left-4 w-24 h-24 rounded-xl” style={{ background: “rgba(28,28,30,0.03)”, border: “1px solid rgba(28,28,30,0.06)”, zIndex: -1 }} />
+<div className=“absolute -top-3 -right-3 w-16 h-16 rounded-lg” style={{ background: “rgba(28,28,30,0.03)”, border: “1px solid rgba(28,28,30,0.06)”, zIndex: -1 }} />
+</div>
+</Reveal>
+</div>
+</div>
 </div>
 
-<script>
-var FOODS=[
-  {name:"Ground Beef",unit:"/kg",emoji:"🥩",color:"#E63946",prices:[9.11,8.80,9.56,9.45,10.69,10.64,11.16,13.08,15.36]},
-  {name:"Eggs",unit:"/dozen",emoji:"🥚",color:"#F4A261",prices:[3.20,3.30,3.45,3.86,3.91,4.38,4.46,4.89,4.74]},
-  {name:"Milk",unit:"/litre",emoji:"🥛",color:"#E9ECEF",prices:[2.35,2.47,2.51,2.57,2.63,2.89,2.91,3.03,3.12]},
-  {name:"Cereal",unit:"/400g",emoji:"🥣",color:"#2A9D8F",prices:[3.04,3.11,3.09,3.24,3.49,4.04,4.17,4.13,4.12]},
-  {name:"Cheese",unit:"/500g",emoji:"🧀",color:"#E9C46A",prices:[5.72,5.85,5.87,6.17,6.30,6.76,6.71,6.76,6.97]},
-  {name:"Orange Juice",unit:"/2L",emoji:"🍊",color:"#F77F00",prices:[3.57,3.65,3.74,3.84,4.01,4.00,4.93,5.62,6.33]}
+```
+  {/* Scroll indicator */}
+  <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+    <span className="text-[10px] tracking-[0.2em] uppercase" style={{ fontFamily: "Outfit, sans-serif", color: "#6B6B6B" }}>Scroll</span>
+    <div className="w-px h-8" style={{ background: "linear-gradient(to bottom, #6B6B6B, transparent)" }} />
+  </div>
+</section>
+```
+
+);
+}
+
+/* ───────────────────────── ABOUT ───────────────────────── */
+function About() {
+const stats = [
+{ number: “4+”, label: “Roles in Product, Data & Teaching” },
+{ number: “1000+”, label: “Teams Competed Against (Kaggle)” },
+{ number: “3”, label: “Certificates & Specializations” },
 ];
-var YEARS=[2018,2019,2020,2021,2022,2023,2024,2025,2026];
-var activeYear=0,isPlaying=false,timer=null,maxPrice=16;
-
-function buildChart(){
-  var chart=document.getElementById('chart-section');
-  chart.innerHTML='';
-  FOODS.forEach(function(food,fi){
-    var card=document.createElement('div');
-    card.className='food-card';
-    card.id='card-'+fi;
-    card.innerHTML=
-      '<div class="food-emoji">'+food.emoji+'</div>'+
-      '<div class="food-name" style="color:'+food.color+'">'+food.name+'</div>'+
-      '<div class="food-unit">'+food.unit+'</div>'+
-      '<div class="bar-area">'+
-        '<div class="guide" style="bottom:0"></div>'+
-        '<div class="guide" style="bottom:70px"></div>'+
-        '<div class="guide" style="bottom:140px"></div>'+
-        '<div class="guide" style="bottom:210px"></div>'+
-        '<div class="guide" style="bottom:280px"></div>'+
-        '<div class="bar" id="bar-'+fi+'" style="height:0;background:linear-gradient(180deg,'+food.color+','+food.color+'88);box-shadow:0 0 20px '+food.color+'30,inset 0 1px 0 rgba(255,255,255,0.2)">'+
-          '<div class="bar-side" style="background:linear-gradient(180deg,'+food.color+'66,'+food.color+'33)"></div>'+
-          '<div class="bar-top" style="background:linear-gradient(90deg,'+food.color+'cc,'+food.color+'88)"></div>'+
-          '<div class="bar-shine"></div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="price" id="price-'+fi+'">$'+food.prices[0].toFixed(2)+'</div>'+
-      '<div class="change" id="change-'+fi+'">—</div>'+
-      '<div class="change-label" id="clabel-'+fi+'">baseline</div>';
-    chart.appendChild(card);
-  });
+const tags = [“Quantitative Analysis”, “Product Strategy”, “Data Science”, “Economic Research”, “A/B Testing”, “Teaching”, “Machine Learning”, “Policy Analysis”];
+return (
+<section id=“about” className=“py-24 md:py-32” style={{ background: “#FAFAF8” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10">
+<SectionHeader label="01 — About" title="The Short Version" subtitle="An economics thinker with a builder's mindset." />
+<div className="grid md:grid-cols-12 gap-10 md:gap-16">
+<div className="md:col-span-7">
+<Reveal direction="up" delay={0.1}>
+<p className=“text-base md:text-lg leading-relaxed mb-5” style={{ color: “#3A3A3C”, fontFamily: “Outfit, sans-serif” }}>
+I’m an Honours Economics student at the University of Windsor with minors in Applied IT and Mathematics. My work sits at the intersection of rigorous economic thinking and hands-on product building — from teaching advanced microeconomics to co-founding a career platform, from consulting on AI deployment to competing in deep learning challenges.
+</p>
+</Reveal>
+<Reveal direction="up" delay={0.2}>
+<p className=“text-base md:text-lg leading-relaxed mb-8” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}>
+I care about turning complexity into clarity — whether that means translating economic models into product strategy, making data-driven decisions that move metrics, or helping students develop stronger analytical reasoning.
+</p>
+</Reveal>
+<Reveal direction="up" delay={0.3}>
+<div className="flex flex-wrap gap-2.5">
+{tags.map((t, i) => (
+<span key={t} className=“px-4 py-2 text-xs font-medium tracking-wide rounded-full transition-all duration-300 cursor-default” style={{
+background: “#F1F0EC”, color: “#4A4A4A”, fontFamily: “Outfit, sans-serif”, border: “1px solid #E5E4E0”,
+}} onMouseEnter={e => { e.target.style.background = “rgba(196,113,59,0.08)”; e.target.style.borderColor = “rgba(196,113,59,0.2)”; e.target.style.color = “#C4713B”; }}
+onMouseLeave={e => { e.target.style.background = “#F1F0EC”; e.target.style.borderColor = “#E5E4E0”; e.target.style.color = “#4A4A4A”; }}>
+{t}
+</span>
+))}
+</div>
+</Reveal>
+</div>
+<div className="md:col-span-5">
+<div className="space-y-5">
+{stats.map((s, i) => (
+<Reveal key={i} direction=“right” delay={0.15 + i * 0.12}>
+<div className=“p-6 rounded-2xl transition-all duration-300” style={{ background: “#F1F0EC”, border: “1px solid #E5E4E0” }}
+onMouseEnter={e => { e.currentTarget.style.transform = “translateY(-2px)”; e.currentTarget.style.boxShadow = “0 8px 24px rgba(0,0,0,0.04)”; }}
+onMouseLeave={e => { e.currentTarget.style.transform = “none”; e.currentTarget.style.boxShadow = “none”; }}>
+<p className=“text-3xl font-normal mb-1” style={{ fontFamily: “‘DM Serif Display’, serif”, color: “#C4713B” }}>{s.number}</p>
+<p className=“text-sm” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}>{s.label}</p>
+</div>
+</Reveal>
+))}
+</div>
+</div>
+</div>
+</div>
+</section>
+);
 }
 
-function buildTimeline(){
-  var tl=document.getElementById('timeline');
-  tl.innerHTML='';
-  YEARS.forEach(function(y,i){
-    var btn=document.createElement('button');
-    btn.id='tl-'+i;
-    btn.style.width=(i===0?'40px':'24px');
-    btn.style.background=(i===0?'#2A9D8F':'rgba(255,255,255,0.1)');
-    btn.onclick=function(){isPlaying=false;updatePlayBtn();setYear(i);};
-    tl.appendChild(btn);
-  });
+/* ───────────────────────── EDUCATION ───────────────────────── */
+function Education() {
+const courses = [“Linear Algebra”, “Differential Equations”, “Calculus”, “Time Series”, “Algorithms & Programming”, “Microeconomics”, “Macroeconomics”, “Game Theory”, “Optimization”];
+const certs = [“Certificate in Quantitative Economics”, “Certificate in Economics Analysis and Policy”];
+return (
+<section id=“education” className=“py-24 md:py-32” style={{ background: “#F1F0EC” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10">
+<SectionHeader label="02 — Education" title="Academic Foundation" subtitle="A rigorous, quantitative education grounded in economic theory and computational methods." />
+<div className="grid md:grid-cols-12 gap-10">
+<div className="md:col-span-7">
+<Reveal direction="up" delay={0.1}>
+<div className=“p-8 md:p-10 rounded-2xl” style={{ background: “#FAFAF8”, border: “1px solid #E5E4E0” }}>
+<div className="flex items-start justify-between flex-wrap gap-4 mb-6">
+<div>
+<h3 className=“text-xl md:text-2xl font-normal mb-1” style={{ fontFamily: “‘DM Serif Display’, serif”, color: “#1C1C1E” }}>University of Windsor</h3>
+<p className=“text-sm font-medium” style={{ color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>Bachelor of Arts (Honours)</p>
+</div>
+<span className=“text-xs font-medium tracking-wider px-3 py-1.5 rounded-full” style={{ background: “rgba(196,113,59,0.08)”, color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>Sep 2022 — Present</span>
+</div>
+<p className=“text-base leading-relaxed mb-2” style={{ color: “#3A3A3C”, fontFamily: “Outfit, sans-serif” }}>Major in Economics</p>
+<p className=“text-sm leading-relaxed mb-6” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}>Minor in Applied Information Technology & Mathematics</p>
+<div className="mb-6">
+<p className=“text-xs font-semibold tracking-[0.15em] uppercase mb-3” style={{ color: “#9A9A9A”, fontFamily: “Outfit, sans-serif” }}>Relevant Coursework</p>
+<div className="flex flex-wrap gap-2">
+{courses.map(c => (
+<span key={c} className=“px-3 py-1.5 text-xs rounded-lg” style={{ background: “#F1F0EC”, color: “#4A4A4A”, fontFamily: “Outfit, sans-serif”, border: “1px solid #E5E4E0” }}>{c}</span>
+))}
+</div>
+</div>
+</div>
+</Reveal>
+</div>
+<div className="md:col-span-5">
+<div className="space-y-5">
+{certs.map((c, i) => (
+<Reveal key={i} direction=“right” delay={0.2 + i * 0.12}>
+<div className=“p-6 rounded-2xl transition-all duration-300” style={{ background: “#FAFAF8”, border: “1px solid #E5E4E0” }}
+onMouseEnter={e => { e.currentTarget.style.transform = “translateY(-2px)”; e.currentTarget.style.boxShadow = “0 8px 24px rgba(0,0,0,0.04)”; }}
+onMouseLeave={e => { e.currentTarget.style.transform = “none”; e.currentTarget.style.boxShadow = “none”; }}>
+<div className=“w-10 h-10 rounded-xl flex items-center justify-center mb-4” style={{ background: “rgba(196,113,59,0.08)” }}>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4713B" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+</div>
+<p className=“text-sm font-medium leading-snug” style={{ color: “#1C1C1E”, fontFamily: “Outfit, sans-serif” }}>{c}</p>
+<p className=“text-xs mt-2” style={{ color: “#9A9A9A”, fontFamily: “Outfit, sans-serif” }}>University of Windsor · May 2025 — Present</p>
+</div>
+</Reveal>
+))}
+</div>
+</div>
+</div>
+</div>
+</section>
+);
 }
 
-function setYear(idx){
-  activeYear=idx;
-  var yd=document.getElementById('year-display');
-  yd.textContent=YEARS[idx];
-  yd.style.color=idx>=5?'#E63946':idx>=3?'#F4A261':'#2A9D8F';
-  yd.style.textShadow='0 0 40px '+(idx>=5?'rgba(230,57,70,0.3)':'rgba(42,157,143,0.3)');
+/* ───────────────────────── EXPERIENCE ───────────────────────── */
+const experiences = [
+{
+role: “Teaching Assistant”,
+company: “University of Windsor”,
+period: “Jan 2026 — Present”,
+type: “Academic”,
+description: “Teaching Assistant II for Intermediate Microeconomics II (ECON-2220) and Economics Analysis of Law (ECON-4300).”,
+highlights: [
+“Collaborated with instructors to develop tutorial materials, coordinate assessments, and align course learning objectives”,
+“Graded assignments and examinations using standardized rubrics, delivering detailed feedback to strengthen analytical reasoning and economic writing”,
+],
+},
+{
+role: “Chief Product Officer”,
+company: “Look4Career.ca”,
+period: “Jan 2025 — Present”,
+type: “Product & Startup”,
+description: “Co-founded Look4Career.ca and spearheaded all technical development and product strategy.”,
+highlights: [
+“Optimized platform model and UI design — 40% increase in user engagement within year one”,
+“Developed forecasting models and A/B testing protocols informing a strategic product pivot”,
+“Improved click-through rate by 25% and transfer rate by 80% within six months”,
+“Managed a cross-disciplinary team of 4 in a collaborative Agile environment”,
+],
+},
+{
+role: “Data Scientist Consultant”,
+company: “Mocha Tech Solutions INC.”,
+period: “May 2024 — Nov 2024”,
+type: “Data Science & AI”,
+description: “Developed and optimized predictive models across 4 concurrent projects for enterprise clients.”,
+highlights: [
+“Improved client decision-making accuracy by 15% and accelerated delivery timelines by 20%”,
+“Applied transfer learning and hyperparameter optimization to fine-tune GPT-4.1 Mini and Google Gemini models”,
+“Used TensorFlow and PyTorch for scalable AI deployment”,
+“Facilitated alignment between technical and business teams across projects”,
+],
+},
+{
+role: “Operations Research Intern”,
+company: “Shangpin Learning Centre”,
+period: “May 2023 — Aug 2023”,
+type: “Analytics & Operations”,
+description: “Analyzed survey data from 160+ respondents and applied statistical methods to drive operational improvements.”,
+highlights: [
+“Identified insights that increased participant satisfaction by 15%”,
+“Used statistical tools for A/B testing and customer segmentation”,
+“Applied forecasting models to analyze budgetary data and predict enrollment patterns”,
+],
+},
+];
 
-  YEARS.forEach(function(_,i){
-    var btn=document.getElementById('tl-'+i);
-    btn.style.width=(i===activeYear?'40px':'24px');
-    if(i<=activeYear){btn.style.background=(i>=5?'#E63946':i>=3?'#F4A261':'#2A9D8F');}
-    else{btn.style.background='rgba(255,255,255,0.1)';}
-  });
-
-  FOODS.forEach(function(food,fi){
-    var price=food.prices[idx];
-    var change=idx===0?0:((price-food.prices[0])/food.prices[0]*100);
-    var h=(price/maxPrice)*280;
-    document.getElementById('bar-'+fi).style.height=h+'px';
-    document.getElementById('price-'+fi).textContent='$'+price.toFixed(2);
-    var ce=document.getElementById('change-'+fi);
-    ce.textContent=change===0?'—':'+'+change.toFixed(0)+'%';
-    ce.style.color=change>30?'#E63946':change>15?'#F4A261':change>0?'#2A9D8F':'#666';
-    document.getElementById('clabel-'+fi).textContent=change===0?'baseline':'since 2018';
-  });
-
-  document.getElementById('summary').className=idx===YEARS.length-1?'show':'';
-  document.getElementById('summary').style.display=idx===YEARS.length-1?'block':'none';
+function ExperienceCard({ exp, index }) {
+const [hovered, setHovered] = useState(false);
+return (
+<Reveal direction={index % 2 === 0 ? “left” : “right”} delay={0.1 + index * 0.08}>
+<div className=“p-7 md:p-8 rounded-2xl transition-all duration-400 cursor-default” style={{
+background: hovered ? “rgba(196,113,59,0.03)” : “#FAFAF8”,
+border: hovered ? “1px solid rgba(196,113,59,0.18)” : “1px solid #E5E4E0”,
+transform: hovered ? “translateY(-3px)” : “none”,
+boxShadow: hovered ? “0 12px 32px rgba(0,0,0,0.06)” : “0 1px 3px rgba(0,0,0,0.02)”,
+}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+<div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+<div>
+<span className=“text-[10px] font-semibold tracking-[0.2em] uppercase px-2.5 py-1 rounded-full mb-3 inline-block” style={{ background: “rgba(196,113,59,0.08)”, color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>{exp.type}</span>
+<h3 className=“text-xl md:text-2xl font-normal mt-2” style={{ fontFamily: “‘DM Serif Display’, serif”, color: “#1C1C1E” }}>{exp.role}</h3>
+<p className=“text-sm font-medium mt-1” style={{ color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>{exp.company}</p>
+</div>
+<span className=“text-xs font-medium tracking-wide” style={{ color: “#9A9A9A”, fontFamily: “Outfit, sans-serif” }}>{exp.period}</span>
+</div>
+<p className=“text-sm leading-relaxed mb-4” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}>{exp.description}</p>
+<div className="space-y-2">
+{exp.highlights.map((h, i) => (
+<div key={i} className="flex gap-3 items-start">
+<div className=“w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0” style={{ background: “#C4713B”, opacity: 0.5 }} />
+<p className=“text-sm leading-relaxed” style={{ color: “#4A4A4A”, fontFamily: “Outfit, sans-serif” }}>{h}</p>
+</div>
+))}
+</div>
+</div>
+</Reveal>
+);
 }
 
-function togglePlay(){
-  isPlaying=!isPlaying;
-  updatePlayBtn();
-  if(isPlaying){
-    if(activeYear>=YEARS.length-1){setYear(0);}
-    runTimer();
-  }else{clearInterval(timer);}
+function Experience() {
+return (
+<section id=“experience” className=“py-24 md:py-32” style={{ background: “#FAFAF8” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10">
+<SectionHeader label="03 — Experience" title="Where I've Built & Learned" subtitle="From teaching economics to shipping products and deploying AI models." />
+<div className="space-y-6">
+{experiences.map((exp, i) => <ExperienceCard key={i} exp={exp} index={i} />)}
+</div>
+</div>
+</section>
+);
 }
 
-function runTimer(){
-  clearInterval(timer);
-  timer=setInterval(function(){
-    if(activeYear>=YEARS.length-1){isPlaying=false;updatePlayBtn();clearInterval(timer);return;}
-    setYear(activeYear+1);
-  },1800);
+/* ───────────────────────── RESEARCH INTERESTS ───────────────────────── */
+function Research() {
+const interests = [
+{ title: “Applied Economics”, icon: “📊”, desc: “Empirical analysis of markets, incentives, and resource allocation in real-world settings.” },
+{ title: “Urban & Housing Economics”, icon: “🏙️”, desc: “Spatial dynamics, housing markets, and the economics of urban development.” },
+{ title: “Policy Analysis”, icon: “📋”, desc: “Evaluating policy interventions through quantitative methods and causal inference.” },
+{ title: “Data-Driven Decision Making”, icon: “⚡”, desc: “Bridging analytics and strategy for evidence-based outcomes.” },
+{ title: “Product Strategy”, icon: “🎯”, desc: “User behavior modeling, experimentation frameworks, and growth analytics.” },
+{ title: “Quantitative Analysis”, icon: “∑”, desc: “Statistical modeling, forecasting, and computational methods in economics.” },
+{ title: “Behavioral & Market Insights”, icon: “🧠”, desc: “Understanding decision-making patterns and market dynamics.” },
+];
+return (
+<section id=“research” className=“py-24 md:py-32” style={{ background: “#1A1A2E” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10">
+<SectionHeader label="04 — Research Interests" title="What I Think About" subtitle="Areas where I want to deepen understanding and create impact." light />
+<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+{interests.map((item, i) => (
+<Reveal key={i} direction=“up” delay={0.08 * i}>
+<InterestCard item={item} />
+</Reveal>
+))}
+</div>
+</div>
+</section>
+);
 }
 
-function updatePlayBtn(){
-  var btn=document.getElementById('play-btn');
-  if(isPlaying){btn.textContent='⏸ PAUSE';btn.style.background='rgba(255,255,255,0.1)';}
-  else if(activeYear>=YEARS.length-1){btn.textContent='↻ REPLAY';btn.style.background='linear-gradient(135deg,#E63946,#F4A261)';}
-  else{btn.textContent='▶ PLAY';btn.style.background='linear-gradient(135deg,#E63946,#F4A261)';}
+function InterestCard({ item }) {
+const [hovered, setHovered] = useState(false);
+return (
+<div className=“p-6 rounded-2xl transition-all duration-400 cursor-default h-full” style={{
+background: hovered ? “rgba(196,113,59,0.08)” : “rgba(255,255,255,0.04)”,
+border: hovered ? “1px solid rgba(196,113,59,0.25)” : “1px solid rgba(255,255,255,0.08)”,
+transform: hovered ? “translateY(-3px)” : “none”,
+}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+<span className="text-2xl mb-4 block">{item.icon}</span>
+<h3 className=“text-base font-medium mb-2” style={{ fontFamily: “Outfit, sans-serif”, color: hovered ? “#D4855A” : “#FAFAF8” }}>{item.title}</h3>
+<p className=“text-sm leading-relaxed” style={{ color: “rgba(250,250,248,0.5)”, fontFamily: “Outfit, sans-serif” }}>{item.desc}</p>
+</div>
+);
 }
 
-function startAnimation(){
-  document.getElementById('start-btn').classList.add('hidden');
-  document.getElementById('year-section').classList.remove('hidden');
-  document.getElementById('year-section').classList.add('fade-in');
-  document.getElementById('chart-section').classList.remove('hidden');
-  document.getElementById('chart-section').classList.add('fade-in');
-  document.getElementById('controls').classList.remove('hidden');
-  buildChart();buildTimeline();setYear(0);
-  setTimeout(function(){
-    FOODS.forEach(function(food,fi){
-      var h=(food.prices[0]/maxPrice)*280;
-      document.getElementById('bar-'+fi).style.height=h+'px';
-    });
-    setTimeout(function(){isPlaying=true;runTimer();},800);
-  },300);
+/* ───────────────────────── PROJECTS ───────────────────────── */
+function Projects() {
+const projects = [
+{
+title: “Kaggle Deep Learning Competition”,
+subtitle: “Silver Medal · Top among 1,000+ Teams”,
+description: “Analyzed deep learning architectures to predict node consumption time, focusing on model performance and resource efficiency. Implemented a Graph Convolutional Network integrating multiple prediction models.”,
+tags: [“Deep Learning”, “GCN”, “Python”, “Kaggle”],
+role: “Competitor / Researcher”,
+period: “Jan 2024 — Mar 2024”,
+},
+{
+title: “Look4Career Platform”,
+subtitle: “Full-Stack Product · Co-Founder”,
+description: “Built and scaled a career discovery platform from zero using React, Node.js, and data-driven experimentation. Achieved significant growth metrics through iterative A/B testing and UX optimization.”,
+tags: [“React”, “Node.js”, “A/B Testing”, “Product”],
+role: “Chief Product Officer”,
+period: “2025 — Present”,
+},
+];
+return (
+<section id=“projects” className=“py-24 md:py-32” style={{ background: “#F1F0EC” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10">
+<SectionHeader label="05 — Projects" title="Selected Work" subtitle="Projects where I applied research, engineering, and product thinking." />
+<div className="grid md:grid-cols-2 gap-6">
+{projects.map((p, i) => (
+<Reveal key={i} direction=“up” delay={0.1 + i * 0.12}>
+<ProjectCard project={p} />
+</Reveal>
+))}
+</div>
+</div>
+</section>
+);
 }
 
-function resetAll(){
-  isPlaying=false;clearInterval(timer);
-  document.getElementById('start-btn').classList.remove('hidden');
-  document.getElementById('year-section').classList.add('hidden');
-  document.getElementById('chart-section').classList.add('hidden');
-  document.getElementById('controls').classList.add('hidden');
-  document.getElementById('summary').style.display='none';
-  activeYear=0;updatePlayBtn();
+function ProjectCard({ project }) {
+const [hovered, setHovered] = useState(false);
+return (
+<div className=“p-7 md:p-8 rounded-2xl transition-all duration-400 cursor-pointer h-full flex flex-col” style={{
+background: hovered ? “#FAFAF8” : “#FAFAF8”,
+border: hovered ? “1px solid rgba(196,113,59,0.2)” : “1px solid #E5E4E0”,
+transform: hovered ? “translateY(-4px)” : “none”,
+boxShadow: hovered ? “0 16px 40px rgba(0,0,0,0.06)” : “0 1px 3px rgba(0,0,0,0.02)”,
+}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+<div className="flex items-center justify-between mb-4">
+<span className=“text-xs font-medium tracking-wide” style={{ color: “#9A9A9A”, fontFamily: “Outfit, sans-serif” }}>{project.period}</span>
+<span className=“text-xs font-medium px-2.5 py-1 rounded-full” style={{ background: “rgba(196,113,59,0.08)”, color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>{project.role}</span>
+</div>
+<h3 className=“text-xl md:text-2xl font-normal mb-1” style={{ fontFamily: “‘DM Serif Display’, serif”, color: “#1C1C1E” }}>{project.title}</h3>
+<p className=“text-sm font-medium mb-3” style={{ color: “#C4713B”, fontFamily: “Outfit, sans-serif” }}>{project.subtitle}</p>
+<p className=“text-sm leading-relaxed mb-5 flex-grow” style={{ color: “#6B6B6B”, fontFamily: “Outfit, sans-serif” }}>{project.description}</p>
+<div className="flex flex-wrap gap-2 mb-5">
+{project.tags.map(t => (
+<span key={t} className=“px-3 py-1 text-xs rounded-full” style={{ background: “#F1F0EC”, color: “#4A4A4A”, fontFamily: “Outfit, sans-serif”, border: “1px solid #E5E4E0” }}>{t}</span>
+))}
+</div>
+<div className=“flex items-center gap-2 transition-all duration-300” style={{ color: hovered ? “#C4713B” : “#9A9A9A” }}>
+<span className=“text-xs font-medium tracking-wide” style={{ fontFamily: “Outfit, sans-serif” }}>View Details</span>
+<svg width=“14” height=“14” viewBox=“0 0 24 24” fill=“none” stroke=“currentColor” strokeWidth=“2” style={{ transform: hovered ? “translateX(4px)” : “none”, transition: “transform 0.3s” }}><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+</div>
+</div>
+);
 }
-</script>
-</body>
-</html>
+
+/* ───────────────────────── SKILLS ───────────────────────── */
+function Skills() {
+const categories = [
+{ title: “Programming”, icon: “⌨️”, skills: [“Python”, “R / RStudio”, “JavaScript”, “React”, “Node.js”] },
+{ title: “Data & Quantitative”, icon: “📈”, skills: [“Statistical Modeling”, “Forecasting”, “A/B Testing”, “TensorFlow”, “PyTorch”, “Transfer Learning”] },
+{ title: “Product & Strategy”, icon: “🧭”, skills: [“Product Development”, “Experimentation”, “User Engagement Analysis”, “Agile / Scrum”, “Growth Metrics”] },
+{ title: “Teaching & Communication”, icon: “🎓”, skills: [“Tutorial Design”, “Assessment & Grading”, “Analytical Feedback”, “Cross-Functional Communication”] },
+];
+return (
+<section id=“skills” className=“py-24 md:py-32” style={{ background: “#FAFAF8” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10">
+<SectionHeader label="06 — Skills" title="What I Work With" subtitle="Tools, methods, and disciplines I bring to every project." />
+<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+{categories.map((cat, i) => (
+<Reveal key={i} direction=“up” delay={0.1 + i * 0.1}>
+<SkillCard cat={cat} />
+</Reveal>
+))}
+</div>
+</div>
+</section>
+);
+}
+
+function SkillCard({ cat }) {
+const [hovered, setHovered] = useState(false);
+return (
+<div className=“p-6 rounded-2xl transition-all duration-400 h-full” style={{
+background: hovered ? “rgba(196,113,59,0.03)” : “#F1F0EC”,
+border: hovered ? “1px solid rgba(196,113,59,0.18)” : “1px solid #E5E4E0”,
+transform: hovered ? “translateY(-3px)” : “none”,
+boxShadow: hovered ? “0 8px 24px rgba(0,0,0,0.04)” : “none”,
+}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+<span className="text-2xl mb-4 block">{cat.icon}</span>
+<h3 className=“text-sm font-semibold tracking-wide uppercase mb-4” style={{ fontFamily: “Outfit, sans-serif”, color: “#1C1C1E” }}>{cat.title}</h3>
+<div className="space-y-2">
+{cat.skills.map(s => (
+<div key={s} className="flex items-center gap-2.5">
+<div className=“w-1 h-1 rounded-full” style={{ background: “#C4713B”, opacity: 0.5 }} />
+<span className=“text-sm” style={{ color: “#4A4A4A”, fontFamily: “Outfit, sans-serif” }}>{s}</span>
+</div>
+))}
+</div>
+</div>
+);
+}
+
+/* ───────────────────────── CONTACT ───────────────────────── */
+function Contact() {
+const items = [
+{ label: “Email”, value: “zongnan999@gmail.com”, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg> },
+{ label: “Location”, value: “Windsor, Ontario”, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> },
+{ label: “LinkedIn”, value: “linkedin.com/in/yaonan-liu”, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg> },
+{ label: “GitHub”, value: “github.com/yaonan-liu”, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg> },
+];
+return (
+<section id=“contact” className=“py-24 md:py-32” style={{ background: “#1A1A2E” }}>
+<div className="max-w-7xl mx-auto px-6 md:px-10">
+<SectionHeader label="07 — Contact" title="Let's Connect" subtitle="Open to research collaborations, product opportunities, and interesting conversations." light />
+<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+{items.map((item, i) => (
+<Reveal key={i} direction=“up” delay={0.1 + i * 0.08}>
+<ContactCard item={item} />
+</Reveal>
+))}
+</div>
+<Reveal direction="up" delay={0.5}>
+<div className="flex justify-center">
+<button className=“px-8 py-3.5 text-sm font-medium tracking-wide rounded-full cursor-pointer transition-all duration-300” style={{ background: “#C4713B”, color: “#FAFAF8”, fontFamily: “Outfit, sans-serif” }}
+onMouseEnter={e => { e.target.style.background = “#D4855A”; e.target.style.transform = “translateY(-2px)”; e.target.style.boxShadow = “0 8px 24px rgba(196,113,59,0.3)”; }}
+onMouseLeave={e => { e.target.style.background = “#C4713B”; e.target.style.transform = “none”; e.target.style.boxShadow = “none”; }}>
+Download Resume / CV
+</button>
+</div>
+</Reveal>
+</div>
+</section>
+);
+}
+
+function ContactCard({ item }) {
+const [hovered, setHovered] = useState(false);
+return (
+<div className=“p-6 rounded-2xl transition-all duration-400 cursor-pointer” style={{
+background: hovered ? “rgba(196,113,59,0.08)” : “rgba(255,255,255,0.04)”,
+border: hovered ? “1px solid rgba(196,113,59,0.25)” : “1px solid rgba(255,255,255,0.08)”,
+transform: hovered ? “translateY(-2px)” : “none”,
+}} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+<div className=“mb-3” style={{ color: hovered ? “#D4855A” : “rgba(250,250,248,0.4)” }}>{item.icon}</div>
+<p className=“text-xs font-semibold tracking-[0.15em] uppercase mb-1” style={{ color: “rgba(250,250,248,0.35)”, fontFamily: “Outfit, sans-serif” }}>{item.label}</p>
+<p className=“text-sm font-medium” style={{ color: hovered ? “#D4855A” : “#FAFAF8”, fontFamily: “Outfit, sans-serif”, transition: “color 0.3s” }}>{item.value}</p>
+</div>
+);
+}
+
+/* ───────────────────────── FOOTER ───────────────────────── */
+function Footer() {
+return (
+<footer className=“py-8 text-center” style={{ background: “#141427”, borderTop: “1px solid rgba(255,255,255,0.05)” }}>
+<p className=“text-xs” style={{ color: “rgba(250,250,248,0.25)”, fontFamily: “Outfit, sans-serif” }}>
+© 2026 Yaonan Liu — Designed with intention.
+</p>
+</footer>
+);
+}
+
+/* ───────────────────────── MAIN APP ───────────────────────── */
+export default function App() {
+return (
+<div style={{ fontFamily: “Outfit, sans-serif” }}>
+<style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&display=swap'); * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; } body { background: #FAFAF8; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; } ::selection { background: rgba(196,113,59,0.15); color: #1C1C1E; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #FAFAF8; } ::-webkit-scrollbar-thumb { background: #D1D0CC; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #C4713B; }`}</style>
+<Nav />
+<Hero />
+<About />
+<Education />
+<Experience />
+<Research />
+<Projects />
+<Skills />
+<Contact />
+<Footer />
+</div>
+);
+}
