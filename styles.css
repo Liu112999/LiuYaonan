@@ -386,4 +386,23 @@ html[lang="zh"] .footer-bottom p,html[lang="zh"] .footer-col a,html[lang="zh"] .
   .nav-inner{padding:0 20px;}
   .grid-2,.grid-3{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr;gap:30px;}
-  .stats{gr
+  .stats{grid-template-columns:1fr 1fr;}
+}
+
+/* ---------- News section (homepage) ---------- */
+.news-feed{display:flex;flex-direction:column;gap:16px;max-width:900px;}
+.news-item{display:flex;gap:28px;align-items:baseline;padding:20px 26px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);}
+.news-when{flex:0 0 112px;display:flex;flex-direction:column;gap:3px;font-family:var(--sans);font-size:13.5px;font-weight:700;color:var(--ink);}
+.news-kind{font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);}
+.news-cite{margin:0;font-size:15px;line-height:1.75;color:var(--ink-2);}
+.news-cite a{color:var(--ink);font-weight:500;text-decoration:none;border-bottom:1.5px solid var(--accent-tint-2);transition:color .2s var(--ease),border-color .2s var(--ease);}
+.news-cite a:hover{color:var(--accent-2);border-bottom-color:var(--accent-2);}
+@media (max-width:640px){.news-item{flex-direction:column;gap:10px;padding:18px 20px;}}
+
+/* ---------- Student feedback (teaching) ---------- */
+.fb-col{display:flex;flex-direction:column;gap:14px;}
+.fb-src{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;}
+.fb-src a{color:var(--accent-2);text-decoration:none;border-bottom:1.5px solid var(--accent-tint-2);}
+.fb-src a:hover{border-bottom-color:var(--accent-2);}
+.fb-meta{font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0.02em;}
+.fb-quote{margin:0;background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);padding:18px 22px;font-family:var(--serif);font-style:italic;font-size:15.5px;line-height:1.72;color:var(--ink-2);}
